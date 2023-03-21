@@ -117,6 +117,45 @@ paths:
           Bearer: []
       summary: Destroy a Session
       description: 'Destroys a `Session`, signing the user out. Reads the session ID from Authorization header.'
+  /notes:
+    summary: Path used to manage the list of notes.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `Note` entities.  This path contains a
+      `GET` and `POST` operation to perform the list and create tasks, respectively.
+    get:
+      tags:
+        - /notes
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Note'
+          description: Successful response - returns an array of `Note` entities.
+        '400':
+          content:
+            text/html:
+              examples:
+                Invalid authorization header:
+                  value: Invalid authorization header
+          description: Bad Request
+        '401':
+          content:
+            text/html:
+              examples:
+                Missing authorization header:
+                  value: Missing authorization header
+                Invalid session:
+                  value: Invalid session
+          description: Unauthorized
+      security:
+        -
+          Bearer: []
+      operationId: getNotes
+      summary: List All Notes
+      description: Gets a list of all `Note` entities.
 components:
   schemas:
     User:
@@ -166,6 +205,26 @@ components:
       example:
         email: admin
         password: KollneKollne
+    Note:
+      title: Root Type for Note
+      description: ''
+      type: object
+      properties:
+        content:
+          type: string
+        id:
+          format: int32
+          type: integer
+        title:
+          type: string
+        userId:
+          format: int32
+          type: integer
+      example:
+        content: This is the content of note 1
+        id: 1
+        title: Note 1
+        userId: 1
   securitySchemes:
     Bearer:
       scheme: bearer
@@ -176,4 +235,7 @@ tags:
     description: ''
   -
     name: /sessions
+    description: ''
+  -
+    name: /notes
     description: ''

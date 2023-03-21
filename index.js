@@ -19,8 +19,30 @@ const users = [
     {id: 1, email: 'admin', password: '$2b$10$0EfA6fMFRDVQWzU0WR1dmelPA7.qSp7ZYJAgneGsy2ikQltX2Duey'} // KollneKollne
 ]
 
+const notes = [
+    {
+        id: 1,
+        title: 'Note 1',
+        content: 'This is the content of note 1',
+        userId: 1
+    },
+    {
+        id: 2,
+        title: 'Note 2',
+        content: 'This is the content of note 2',
+        userId: 2
+    },
+    {
+        id: 3,
+        title: 'Note 3',
+        content: 'This is the content of note 3',
+        userId: 1
+    }
+]
+
+
 let sessions = [
-    // {id: '123', userId: 1}
+    {id: '123', userId: 1}
 ]
 
 function tryToParseJson(jsonString) {
@@ -139,6 +161,15 @@ function authorizeRequest(req, res, next) {
     next()
 
 }
+
+app.get('/notes', authorizeRequest, (req, res) => {
+
+    // Get notes for user
+    const notesForUser = notes.filter(note => note.userId === req.user.id)
+
+    // Send notes to client
+    res.send(notesForUser)
+})
 
 app.delete('/sessions', authorizeRequest, (req, res) => {
 

@@ -21,6 +21,27 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-config" content="/icons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+    <style>
+
+        #note-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-gap: 1rem;
+            grid-auto-rows: minmax(100px, auto);
+        }
+
+        .note-card {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: .25rem;
+            padding: 1rem;
+        }
+
+        .note-card:hover {
+            background-color: #e9ecef;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -45,6 +66,18 @@
                     Sign Out
                 </button>
             </div>
+
+            &nbsp;
+
+            <!-- List of notes -->
+            <div id="note-list">
+                <div v-for="note in notes" class="note-card">
+                    {{ note.title }}<br>
+                    {{ note.content }}
+                </div>
+            </div>
+
+
         </div>
     </div>
 
@@ -132,15 +165,29 @@
                 signUpPassword: null,
                 signInEmail: null,
                 signInPassword: null,
-                sessionId: null
+                sessionId: null,
+                notes: null
             }
         },
         mounted() {
             // Check if the user is already logged in from local storage
             this.sessionId = localStorage.getItem('sessionId')
 
+            // If the user is logged in, get the notes
+            if (this.sessionId) {
+                this.getNotes()
+            }
+
         },
         methods: {
+
+            getNotes() {
+                this.send('GET', '/notes').then(response => {
+                    if (response.ok) {
+                        this.notes = response.body
+                    }
+                })
+            },
             showModal: function (modalId) {
                 this.modalHandler = new bootstrap.Modal(document.getElementById(modalId), {
                     keyboard: false
@@ -214,6 +261,9 @@
                     // Close the modal
                     this.modalHandler.hide()
 
+                    // Get the notes
+                    this.getNotes()
+
                 }
             },
             signOut: async function () {
@@ -228,6 +278,7 @@
             clearStorageAndResetSessionId: function () {
                 localStorage.removeItem('sessionId')
                 this.sessionId = null
+                this.notes = null
             }
         }
     }).mount('#app')
