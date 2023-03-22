@@ -180,6 +180,22 @@ app.delete('/sessions', authorizeRequest, (req, res) => {
 
 })
 
+app.post('/notes', authorizeRequest, (req, res) => {
+
+    // Validate title and content
+    if (!req.body.title || !req.body.content) return res.status(400).send('Title and content are required')
+
+    // Find max id
+    const maxId = notes.reduce((max, note) => note.id > max ? note.id : max, notes[0].id)
+
+    // Save note to database
+    notes.push({id: maxId + 1, title: req.body.title, content: req.body.content, userId: req.user.id})
+
+    // Send note to client
+    res.status(201).send(notes[notes.length - 1])
+
+})
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
 })
